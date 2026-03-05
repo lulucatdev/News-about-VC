@@ -11,7 +11,7 @@ echo ""
 
 # 检查是否在正确目录
 if [ ! -f "main.py" ]; then
-    echo "❌ 错误: 请在 News about VC 目录中运行此脚本"
+    echo "❌ 错误: 请在 News-about-VC 目录中运行此脚本"
     exit 1
 fi
 

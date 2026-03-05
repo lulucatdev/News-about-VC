@@ -1,13 +1,13 @@
 # GitHub 同步指南
 
-本项目代码位于 `News about VC` 文件夹中，同步到GitHub时保持此结构。
+本项目代码位于 `News-about-VC` 文件夹中，同步到GitHub时保持此结构。
 
 ## 快速开始
 
 ### 1. 初始化Git仓库（如果尚未初始化）
 
 ```bash
-cd "News about VC"
+cd "News-about-VC"
 git init
 ```
 
@@ -51,7 +51,7 @@ git push -u origin main
 每次修改后，使用以下命令更新GitHub：
 
 ```bash
-cd "News about VC"
+cd "News-about-VC"
 git add .
 git commit -m "更新说明"
 git push
@@ -60,7 +60,7 @@ git push
 ## 项目结构说明
 
 ```
-News about VC/
+News-about-VC/
 ├── vc_tracker/          # 核心代码模块
 │   ├── __init__.py
 │   ├── crawler.py       # 爬虫模块
@@ -85,7 +85,7 @@ News about VC/
 首次运行前，安装Python依赖：
 
 ```bash
-cd "News about VC"
+cd "News-about-VC"
 pip install -r requirements.txt
 ```
 

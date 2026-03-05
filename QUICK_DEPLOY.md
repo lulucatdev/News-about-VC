@@ -16,7 +16,7 @@
 
 ```bash
 # 进入项目目录
-cd "News about VC"
+cd "News-about-VC"
 
 # 初始化Git
 git init

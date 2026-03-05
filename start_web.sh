@@ -12,7 +12,7 @@ echo ""
 # 检查是否在项目目录中
 if [ ! -f "web_server.py" ]; then
     echo "❌ 错误：请确保在项目根目录运行此脚本"
-    echo "   正确路径: News about VC/"
+    echo "   正确路径: News-about-VC/"
     exit 1
 fi
 

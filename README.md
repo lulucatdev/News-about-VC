@@ -193,7 +193,7 @@ python main.py list --source hackernews --limit 20
 ## 项目结构
 
 ```
-News about VC/
+News-about-VC/
 ├── vc_tracker/
 │   ├── __init__.py
 │   ├── crawler.py          # 36kr爬虫模块
@@ -288,11 +288,11 @@ News about VC/
 
 ## GitHub同步
 
-项目代码位于`News about VC`文件夹中，详见`GITHUB_GUIDE.md`获取完整的GitHub同步指南。
+项目代码位于`News-about-VC`文件夹中，详见`GITHUB_GUIDE.md`获取完整的GitHub同步指南。
 
 快速推送：
 ```bash
-cd "News about VC"
+cd "News-about-VC"
 git add .
 git commit -m "v2.0: 更新为4大新数据源"
 git push

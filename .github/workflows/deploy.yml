@@ -16,7 +16,7 @@ jobs:
     - name: Install deps
       run: pip install requests beautifulsoup4 lxml
     - name: Crawl
-      run: 'cd "News about VC"
+      run: 'cd "News-about-VC"
 
         mkdir -p data static
 
@@ -46,7 +46,7 @@ jobs:
 
         git config user.name "GitHub Action"
 
-        git add "News about VC/data/" "News about VC/static/"
+        git add "News-about-VC/data/" "News-about-VC/static/"
 
         git commit -m "Update data" || echo "No changes"
 
@@ -63,9 +63,9 @@ jobs:
     - name: Prepare
       run: 'mkdir -p docs
 
-        cp "News about VC/static/index.html" docs/
+        cp "News-about-VC/static/index.html" docs/
 
-        cp "News about VC/static/data.json" docs/ 2>/dev/null || echo ''{"data":[]}''
+        cp "News-about-VC/static/data.json" docs/ 2>/dev/null || echo ''{"data":[]}''
         > docs/data.json'
     - uses: actions/upload-pages-artifact@v3
       with:

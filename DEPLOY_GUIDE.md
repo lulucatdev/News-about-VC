@@ -49,7 +49,7 @@ Initialize: 不要勾选任何选项
 
 ```bash
 # 进入项目目录
-cd "News about VC"
+cd "News-about-VC"
 
 # 初始化Git仓库
 git init
@@ -152,7 +152,7 @@ on:
 ### 部署相关文件
 
 ```
-News about VC/
+News-about-VC/
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml          # GitHub Actions工作流

@@ -12,7 +12,7 @@
 
 ```bash
 # 进入项目目录
-cd "News about VC"
+cd "News-about-VC"
 
 # 运行启动脚本
 ./start_web.sh
@@ -22,7 +22,7 @@ cd "News about VC"
 
 ```bash
 # 进入项目目录
-cd "News about VC"
+cd "News-about-VC"
 
 # 激活虚拟环境（如果存在）
 source venv/bin/activate
@@ -279,7 +279,7 @@ chmod 755 data
 现在就去启动Web服务器，体验便捷的VC资讯浏览：
 
 ```bash
-cd "News about VC"
+cd "News-about-VC"
 ./start_web.sh
 ```
 

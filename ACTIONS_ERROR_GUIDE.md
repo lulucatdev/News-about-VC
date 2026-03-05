@@ -44,7 +44,7 @@ pip: command not found
 **解决：**
 1. 检查 requirements.txt 是否存在：
    ```bash
-   ls -la "News about VC/requirements.txt"
+   ls -la "News-about-VC/requirements.txt"
    ```
 
 2. 检查 requirements.txt 内容：
@@ -78,7 +78,7 @@ ModuleNotFoundError: No module named 'bs4'
 ```yaml
 - name: Install dependencies
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     pip install --upgrade pip
     pip install requests beautifulsoup4 lxml
     pip install -e .  # 如果项目有setup.py
@@ -89,7 +89,7 @@ ModuleNotFoundError: No module named 'bs4'
 ```yaml
 - name: Run crawler
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     PYTHONPATH="${PYTHONPATH}:$(pwd)" python -c "
 import sys
 sys.path.insert(0, '.')
@@ -139,7 +139,7 @@ def _make_request(self, url: str, retries: int = 0, timeout: int = 30) -> Option
 ```yaml
 - name: Run crawler
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     python -c "
 # ...
 mc.crawl_all(max_items_per_site=10)  # 从30改为10，减少请求次数
@@ -179,7 +179,7 @@ No such file or directory: 'static'
 ```yaml
 - name: Run crawler
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     mkdir -p data static  # 创建目录
     python -c "
 # ... 爬虫代码
@@ -192,7 +192,7 @@ No such file or directory: 'static'
 
 **症状：**
 ```
-error: pathspec 'News about VC/data/' did not match any files
+error: pathspec 'News-about-VC/data/' did not match any files
 或
 Permission denied
 ```
@@ -227,7 +227,7 @@ Permission denied
 在本地先测试是否能正常运行：
 
 ```bash
-cd "News about VC"
+cd "News-about-VC"
 python -c "
 import sys
 sys.path.insert(0, '.')
@@ -246,7 +246,7 @@ print(f'成功抓取 {len(mc.data)} 条数据')
 ```yaml
 - name: Run crawler
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     python -c "
 import sys
 import traceback
@@ -274,12 +274,12 @@ except Exception as e:
 ```yaml
 - name: Test import
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     python -c "from vc_tracker.multi_crawler import MultiCrawler; print('导入成功')"
 
 - name: Run crawler
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     python -c "
 from vc_tracker.multi_crawler import MultiCrawler
 mc = MultiCrawler()
@@ -289,7 +289,7 @@ mc.save_data()
 
 - name: Copy to static
   run: |
-    cd "News about VC"
+    cd "News-about-VC"
     mkdir -p static
     cp data/multi_source_news.json static/data.json
 ```
@@ -327,7 +327,7 @@ jobs:
       
       - name: Crawl
         run: |
-          cd "News about VC"
+          cd "News-about-VC"
           mkdir -p data static
           python -c "
 import sys
@@ -346,7 +346,7 @@ print('Done:', len(mc.data))
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
-          git add "News about VC/data/" "News about VC/static/"
+          git add "News-about-VC/data/" "News-about-VC/static/"
           git commit -m "Update" || echo "No changes"
           git push || echo "No push"
 
@@ -361,8 +361,8 @@ print('Done:', len(mc.data))
       - uses: actions/configure-pages@v4
       - run: |
           mkdir -p docs
-          cp "News about VC/static/index.html" docs/
-          cp "News about VC/static/data.json" docs/ || echo '{"data":[]}' > docs/data.json
+          cp "News-about-VC/static/index.html" docs/
+          cp "News-about-VC/static/data.json" docs/ || echo '{"data":[]}' > docs/data.json
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs
