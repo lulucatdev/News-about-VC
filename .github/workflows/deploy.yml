@@ -19,12 +19,20 @@ jobs:
         with:
           python-version: '3.11'
 
+      # ✅ 确保进入正确目录
+      - name: Change to project directory
+        run: |
+          cd "News-about-VC"
+          pwd
+
       - name: Install dependencies
         run: |
+          cd "News-about-VC"
           pip install -r requirements.txt
 
       - name: Crawl
         run: |
+          cd "News-about-VC"
           mkdir -p data static
           python3 - <<EOF
 import sys
@@ -43,6 +51,7 @@ EOF
 
       - name: Commit updated data
         run: |
+          cd "News-about-VC"
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
           git add data/ static/
@@ -64,13 +73,14 @@ EOF
 
       - name: Prepare site
         run: |
+          cd "News-about-VC"
           mkdir -p docs
           cp static/index.html docs/
           cp static/data.json docs/ 2>/dev/null || echo '{"data":[]}' > docs/data.json
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: News-about-VC/docs
 
       - id: deployment
         uses: actions/deploy-pages@v4
