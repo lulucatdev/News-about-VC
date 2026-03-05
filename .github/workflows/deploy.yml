@@ -1,0 +1,134 @@
+name: VC Tracker Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 lxml
+          
+      - name: Debug and prepare
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Listing all files:"
+          ls -la
+          echo "Finding project directory..."
+          find . -maxdepth 2 -type d -name "*VC*" -o -name "*News*"
+          
+      - name: Create crawler script
+        run: |
+          cat > /tmp/crawler.py << 'PYTHON_EOF'
+          import sys
+          import os
+          import shutil
+          
+          # Add project to path
+          project_dir = os.environ.get('PROJECT_DIR', '.')
+          sys.path.insert(0, project_dir)
+          os.chdir(project_dir)
+          
+          print(f"Working in: {os.getcwd()}")
+          
+          # Create init files
+          open('vc_tracker/__init__.py', 'a').close()
+          open('config/__init__.py', 'a').close()
+          
+          from vc_tracker.multi_crawler import MultiCrawler
+          
+          print("Starting crawler...")
+          mc = MultiCrawler()
+          
+          # Only crawl reliable sources
+          mc.crawl_selected(['hackernews', 'paulgraham'], max_items_per_site=20)
+          mc.save_data()
+          
+          # Copy to static
+          os.makedirs('static', exist_ok=True)
+          if os.path.exists('data/multi_source_news.json'):
+              shutil.copy('data/multi_source_news.json', 'static/data.json')
+              print(f"Success! Crawled {len(mc.data)} items")
+          else:
+              print("Warning: No data file generated")
+          PYTHON_EOF
+          
+      - name: Run crawler
+        run: |
+          # Find project directory
+          if [ -d "News about VC" ]; then
+            export PROJECT_DIR="News about VC"
+          elif [ -d "News-about-VC" ]; then
+            export PROJECT_DIR="News-about-VC"
+          else
+            echo "Error: Cannot find project directory"
+            ls -la
+            exit 1
+          fi
+          
+          echo "Found project at: '$PROJECT_DIR'"
+          python3 /tmp/crawler.py
+          
+      - name: Commit data changes
+        run: |
+          if [ -d "News about VC" ]; then
+            cd "News about VC"
+          elif [ -d "News-about-VC" ]; then
+            cd "News-about-VC"
+          fi
+          
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          
+          git add data/ static/ 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Update data: $(date +'%Y-%m-%d %H:%M')"
+          git push || echo "Nothing to push"
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Build site
+        run: |
+          mkdir -p _site
+          
+          # Copy files
+          if [ -d "News about VC/static" ]; then
+            cp -r "News about VC/static/"* _site/ 2>/dev/null || true
+            cp "News about VC/static/index.html" _site/ 2>/dev/null || echo "<h1>VC Tracker</h1>" > _site/index.html
+          elif [ -d "News-about-VC/static" ]; then
+            cp -r "News-about-VC/static/"* _site/ 2>/dev/null || true
+            cp "News-about-VC/static/index.html" _site/ 2>/dev/null || echo "<h1>VC Tracker</h1>" > _site/index.html
+          fi
+          
+          # Ensure data.json exists
+          if [ ! -f "_site/data.json" ]; then
+            echo "[]" > _site/data.json
+          fi
+          
+          ls -la _site/
+          
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

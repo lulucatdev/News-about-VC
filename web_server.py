@@ -18,7 +18,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from vc_tracker.multi_crawler import MultiCrawler
 
-PORT = 8080
+PORT = 8081
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
