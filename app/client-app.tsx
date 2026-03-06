@@ -54,8 +54,6 @@ export default function ClientApp({
   const [lastCrawl, setLastCrawl] = useState(initialLastCrawl);
   const [sourceFilter, setSourceFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
-  const [refreshMsg, setRefreshMsg] = useState("");
   const [showNotification, setShowNotification] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [hasNewDot, setHasNewDot] = useState(false);
@@ -103,41 +101,6 @@ export default function ClientApp({
       return false;
     return true;
   });
-
-  const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
-    setRefreshMsg("请稍等...");
-    try {
-      const res = await fetch("/api/refresh", { method: "POST" });
-      const data = (await res.json()) as {
-        success: boolean;
-        message: string;
-        inserted: number;
-      };
-      if (!data.success) throw new Error(data.message);
-
-      // Reload articles
-      const articlesRes = await fetch("/api/articles");
-      const articlesData = (await articlesRes.json()) as {
-        articles: Article[];
-        counts: Record<string, number>;
-        total: number;
-        lastCrawl: string | null;
-      };
-      setArticles(articlesData.articles);
-      setCounts(articlesData.counts);
-      setTotal(articlesData.total);
-      setLastCrawl(articlesData.lastCrawl);
-
-      setRefreshMsg(`✓ 已刷新 (${data.inserted} 条新增)`);
-      setTimeout(() => setRefreshMsg(""), 3000);
-    } catch {
-      setRefreshMsg("❌ 刷新失败");
-      setTimeout(() => setRefreshMsg(""), 3000);
-    } finally {
-      setRefreshing(false);
-    }
-  }, []);
 
   const handleBellClick = useCallback(() => {
     setShowNotification(true);
@@ -193,15 +156,6 @@ export default function ClientApp({
             </div>
           </div>
           <div className="nav-controls">
-            <button
-              className={`refresh-btn${refreshing ? " refreshing" : ""}`}
-              onClick={handleRefresh}
-              title="点击实时抓取最新内容"
-            >
-              <span className="spinner" />
-              {!refreshing && <span className="icon">📡</span>}
-              <span>{refreshMsg || "实时刷新"}</span>
-            </button>
             <select
               className="nav-select"
               value={sourceFilter}
@@ -252,7 +206,7 @@ export default function ClientApp({
         {/* Info Bar */}
         <div className="info-bar">
           <span className="info-text">
-            📡 点击"实时刷新"获取5大VC源最新内容
+            📡 每小时自动更新 5 大 VC 源最新内容
           </span>
           <span className="db-info">
             <span style={{ color: "var(--text-muted)", marginRight: 12 }}>
@@ -431,7 +385,7 @@ export default function ClientApp({
                 <ul className="welcome-features">
                   <li>
                     <span className="feature-icon">📬</span>{" "}
-                    <strong>实时刷新</strong> - 一键抓取 5 个网站的最新内容
+                    <strong>自动更新</strong> - 每小时自动抓取 5 个网站的最新内容
                   </li>
                   <li>
                     <span className="feature-icon">🔔</span>{" "}
@@ -456,7 +410,7 @@ export default function ClientApp({
               <div className="welcome-section">
                 <h3>💡 使用提示：</h3>
                 <ul className="welcome-tips">
-                  <li>点击右上角"📡 实时刷新"获取最新内容</li>
+                  <li>内容每小时自动更新，无需手动刷新</li>
                   <li>关注铃铛 🔔 图标，橙色圆点表示有新内容</li>
                   <li>点击文章标题即可跳转到原文阅读</li>
                 </ul>
