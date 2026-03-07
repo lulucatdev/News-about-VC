@@ -23,64 +23,64 @@ const WELCOME_KEY = "vc_radar_welcome_shown";
 
 // 关键词提取函数
 function extractKeywords(title: string): string[] {
-  // 定义常见的技术/VC关键词
+  // 定义常见的技术/VC关键词，按优先级排序
   const keywordPatterns = [
-    // 技术领域
-    'AI', '人工智能', '机器学习', '深度学习', '神经网络', 'LLM', '大模型', 'ChatGPT',
-    '区块链', 'Web3', '加密货币', 'Bitcoin', '以太坊', 'NFT',
-    '云计算', '云原生', '容器', 'Docker', 'Kubernetes', 'K8s',
-    '前端', '后端', '全栈', 'React', 'Vue', 'Angular', 'Node.js',
-    'Python', 'JavaScript', 'TypeScript', 'Go', 'Rust', 'Java',
-    '数据库', 'SQL', 'NoSQL', 'Redis', 'MongoDB', 'PostgreSQL',
-    'DevOps', 'CI/CD', 'GitHub', 'GitLab', 'Jenkins',
-    '微服务', 'Serverless', 'FaaS', 'Lambda',
-    '安全', '网络安全', '加密', '隐私', '零信任',
-    '物联网', 'IoT', '边缘计算', '5G', '6G',
-    '大数据', '数据科学', '数据分析', '数据挖掘', 'BI',
-    'AR', 'VR', 'MR', '元宇宙', 'Metaverse',
-    '自动驾驶', '无人驾驶', '电动汽车', 'EV', 'Tesla',
-    '生物科技', '基因', '医疗', '健康科技', 'HealthTech',
-    '金融科技', 'FinTech', '支付', '数字银行', 'DeFi',
-    '电商', '零售', '新零售', 'DTC', '品牌',
-    'SaaS', 'PaaS', 'IaaS', '低代码', '无代码', 'No-code',
-    '开源', 'Open Source', 'GitHub',
-    // VC/创业相关
-    '初创', '创业', 'Startup', '独角兽', '融资', '投资', 'VC', '风投',
-    '天使投资', '种子轮', 'A轮', 'B轮', 'C轮', 'IPO', '上市',
-    '估值', '股权', '期权', '并购', 'M&A', '收购', '合并',
-    '增长', '增长黑客', 'Growth', 'PMF', '产品市场匹配',
-    '商业模式', '盈利', '收入', '营收', '变现', 'Monetization',
-    '市场', '营销', '品牌', '用户', '客户', '获客', '留存', '转化',
-    '团队', '招聘', '人才', '管理', '领导力', '企业文化',
-    '战略', '战术', '规划', '路线图', 'Roadmap',
-    '创新', '颠覆', '变革', '转型', '数字化',
-    '趋势', '预测', '展望', '未来', 'Next', '下一代',
-    // 知名公司/产品
-    'OpenAI', 'Google', 'Microsoft', 'Apple', 'Amazon', 'Meta', 'Facebook',
-    'Tesla', 'SpaceX', 'Twitter', 'X', 'LinkedIn', 'Netflix', 'Spotify',
-    'Uber', 'Airbnb', 'Stripe', 'Notion', 'Figma', 'Slack', 'Discord',
-    'YC', 'Y Combinator', '红杉', 'Sequoia', 'a16z', 'Andreessen Horowitz',
-    // 通用商业
-    '产品', 'Product', '设计', 'Design', '用户体验', 'UX', 'UI',
-    '工程', 'Engineering', '技术', 'Tech', '研发', 'R&D',
-    '运营', 'Operation', '销售', 'Sales', '客服', 'Support',
-    '敏捷', 'Agile', 'Scrum', '精益', 'Lean', 'MVP',
-    'API', 'SDK', '平台', 'Platform', '生态', 'Ecosystem',
-    '社区', 'Community', '网络效应', 'Network Effect',
-    '规模', 'Scale', '扩张', '国际化', '全球化'
+    // AI/技术趋势 (高优先级)
+    ['OpenAI', 'ChatGPT', 'GPT', 'Claude', 'AI', '人工智能', 'AGI'],
+    ['LLM', '大模型', '机器学习', '深度学习', '神经网络', 'Transformer'],
+    ['Crypto', '加密货币', 'Bitcoin', '比特币', '以太坊', 'Ethereum', '区块链', 'Web3'],
+    ['创业', 'Startup', '融资', '投资', 'VC', '风投'],
+    ['独角兽', 'IPO', '上市', '并购', 'M&A', '收购'],
+    ['SaaS', 'PaaS', '云', 'Cloud'],
+    ['Tesla', 'SpaceX', 'Apple', 'Google', 'Microsoft', 'Meta', 'Amazon', 'Netflix'],
+    ['YC', 'Y Combinator', '红杉', 'Sequoia', 'a16z'],
+    ['产品', 'Product', '增长', 'Growth', 'PMF'],
+    ['编程', '代码', '开发', '软件', '工程'],
+    ['互联网', 'Internet', '科技', 'Tech'],
+    ['数据', 'Data', '大数据', '分析'],
+    ['安全', 'Security', '隐私', 'Privacy'],
+    ['设计', 'Design', 'UX', 'UI', '用户体验'],
+    ['市场', 'Marketing', '销售', 'Sales', '获客'],
+    ['管理', 'Management', '团队', 'Team', '领导力'],
+    ['商业模式', 'Business', '盈利', '变现', '收入'],
+    ['创新', 'Innovation', '颠覆', '变革', '趋势'],
   ];
   
   const keywords: string[] = [];
   const lowerTitle = title.toLowerCase();
   
-  for (const keyword of keywordPatterns) {
-    if (lowerTitle.includes(keyword.toLowerCase())) {
-      keywords.push(keyword);
-      if (keywords.length >= 2) break; // 最多取2个关键词
+  // 按优先级组匹配，每组最多取一个
+  for (const group of keywordPatterns) {
+    for (const keyword of group) {
+      if (lowerTitle.includes(keyword.toLowerCase())) {
+        // 标准化一些关键词显示
+        let displayKeyword = keyword;
+        if (keyword === '人工智能') displayKeyword = 'AI';
+        else if (keyword === '比特币') displayKeyword = 'Bitcoin';
+        else if (keyword === '以太坊') displayKeyword = 'Ethereum';
+        else if (keyword === '大模型') displayKeyword = 'LLM';
+        
+        if (!keywords.includes(displayKeyword)) {
+          keywords.push(displayKeyword);
+          break; // 该组已匹配，跳到下一组
+        }
+      }
+    }
+    if (keywords.length >= 3) break; // 最多取3个关键词
+  }
+  
+  // 如果还是没有匹配到，尝试从标题中提取大写缩写或技术词汇
+  if (keywords.length === 0) {
+    // 匹配常见技术缩写
+    const techAcronyms = ['API', 'SDK', 'GPU', 'CPU', 'NFT', 'DAO', 'DeFi', 'ML', 'DL', 'NLP', 'RAG'];
+    for (const acronym of techAcronyms) {
+      if (lowerTitle.includes(acronym.toLowerCase())) {
+        keywords.push(acronym);
+        if (keywords.length >= 2) break;
+      }
     }
   }
   
-  // 如果没有匹配到关键词，返回空数组
   return keywords;
 }
 
@@ -102,7 +102,15 @@ function getArticleId(item: { title: string; source: string }): string {
 
 function formatLastCrawl(crawlTime: string | null): string {
   if (!crawlTime) return "";
-  return crawlTime.slice(0, 16).replace("T", " ");
+  const date = new Date(crawlTime);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
 }
 
 export default function ClientApp({
@@ -315,13 +323,14 @@ export default function ClientApp({
                       </a>
                     </td>
                     <td className="cell-keywords">
-                      <div className="keywords-container">
-                        {extractKeywords(item.title).map((keyword, idx) => (
-                          <span key={idx} className="keyword-tag">
-                            {keyword}
+                      {(() => {
+                        const keywords = extractKeywords(item.title);
+                        return keywords.length > 0 ? (
+                          <span className="keyword-tag">
+                            {keywords.join(' & ')}
                           </span>
-                        ))}
-                      </div>
+                        ) : null;
+                      })()}
                     </td>
                   </tr>
                 ))}

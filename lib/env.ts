@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import type { D1Database } from "@cloudflare/workers-types";
 
 interface AppEnv {
@@ -6,5 +5,7 @@ interface AppEnv {
 }
 
 export async function getEnv(): Promise<AppEnv> {
-  return env as unknown as AppEnv;
+  const { getPlatformProxy } = await import("wrangler");
+  const proxy = await getPlatformProxy<AppEnv>();
+  return proxy.env;
 }
