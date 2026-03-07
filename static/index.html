@@ -813,6 +813,99 @@
         let allData = [];
         let currentDisplayData = [];
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        function sanitizeUrl(url) {
+            if (!url) return '#';
+            try {
+                const parsed = new URL(url, window.location.origin);
+                if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return url;
+            } catch(e) {}
+            return '#';
+        }
+
+        function getSourceDotColor(source) {
+            if (!source) return 'var(--accent)';
+            if (source.includes('Paul')) return 'var(--source-pg)';
+            if (source.includes('Hacker')) return 'var(--source-hn)';
+            if (source.includes('Sam') || source.includes('Altman')) return 'var(--source-sa)';
+            if (source.includes('Fred') || source.includes('Wilson')) return 'var(--source-fw)';
+            if (source.includes('Benedict') || source.includes('Evans')) return 'var(--source-be)';
+            return 'var(--accent)';
+        }
+
+        async function loadData() {
+            try {
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                allData = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('tableWrap').style.display = 'block';
+                document.getElementById('statsGrid').style.display = 'grid';
+                document.getElementById('dbCount').textContent = allData.length;
+                updateStats();
+                filterData();
+                updateLastUpdateTime();
+                checkNewArticles();
+            } catch (e) {
+                document.getElementById('loading').textContent = '加载失败，请刷新重试';
+            }
+        }
+
+        function updateStats() {
+            const counts = { 'Paul Graham': 0, 'Hacker News': 0, 'Sam Altman': 0, 'Fred Wilson': 0, 'Benedict Evans': 0 };
+            allData.forEach(function(item) {
+                if (counts.hasOwnProperty(item.source)) counts[item.source]++;
+            });
+            document.getElementById('totalCount').textContent = allData.length;
+            document.getElementById('pgCount').textContent = counts['Paul Graham'];
+            document.getElementById('hnCount').textContent = counts['Hacker News'];
+            document.getElementById('saCount').textContent = counts['Sam Altman'];
+            document.getElementById('fwCount').textContent = counts['Fred Wilson'];
+            document.getElementById('beCount').textContent = counts['Benedict Evans'];
+        }
+
+        function filterData() {
+            const source = document.getElementById('source-filter').value;
+            const search = document.getElementById('search').value.toLowerCase();
+            let filtered = allData;
+            if (source !== 'all') {
+                filtered = filtered.filter(function(item) { return item.source === source; });
+            }
+            if (search) {
+                filtered = filtered.filter(function(item) {
+                    return item.title.toLowerCase().includes(search);
+                });
+            }
+            currentDisplayData = filtered;
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = filtered.map(function(item) {
+                const dotColor = getSourceDotColor(item.source);
+                const timeStr = item.publish_time ? escapeHtml(item.publish_time.slice(0, 10)) : '';
+                return '<tr>' +
+                    '<td class="cell-source"><span class="source-dot" style="background:' + dotColor + '"></span><span class="source-name">' + escapeHtml(item.source) + '</span></td>' +
+                    '<td><a href="' + sanitizeUrl(item.url) + '" target="_blank" rel="noopener noreferrer" class="title-link">' + escapeHtml(item.title) + '</a></td>' +
+                    '<td class="cell-time">' + timeStr + '</td>' +
+                    '</tr>';
+            }).join('');
+
+            document.getElementById('totalCount').textContent = filtered.length;
+        }
+
+        function updateLastUpdateTime() {
+            const el = document.getElementById('lastUpdate');
+            if (!el || allData.length === 0) return;
+            const times = allData.map(function(item) { return item.crawl_time || ''; }).filter(Boolean).sort();
+            if (times.length > 0) {
+                el.textContent = '最后更新: ' + times[times.length - 1].slice(0, 16).replace('T', ' ');
+            }
+        }
+
         async function refreshData() {
             const btn = document.getElementById('refreshBtn');
             const originalText = btn.querySelector('span:last-child').textContent;
@@ -820,51 +913,29 @@
             btn.querySelector('span:last-child').textContent = '请稍等...';
 
             try {
-                // 调用后端API重新爬取数据
-                const response = await fetch('http://localhost:8081/api/refresh', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('API请求失败');
-                }
+                // 静态部署模式：直接重新加载 data.json（数据由 GitHub Actions 定时爬取更新）
+                const dataResponse = await fetch('data.json?t=' + new Date().getTime());
+                if (!dataResponse.ok) throw new Error('加载数据失败');
+                allData = await dataResponse.json();
 
-                const result = await response.json();
-                
-                if (result.success) {
-                    // 重新加载数据
-                    const dataResponse = await fetch('data.json?t=' + new Date().getTime());
-                    allData = await dataResponse.json();
-                    
-                    // 更新显示
-                    updateStats();
-                    document.getElementById('dbCount').textContent = allData.length;
-                    filterData();
-                    updateLastUpdateTime();
+                updateStats();
+                document.getElementById('dbCount').textContent = allData.length;
+                filterData();
+                updateLastUpdateTime();
+                checkNewArticles();
 
-                    // 显示成功消息
-                    btn.querySelector('span:last-child').textContent = '✓ ' + result.message;
-                } else {
-                    throw new Error(result.message);
-                }
+                btn.querySelector('span:last-child').textContent = '✓ 已刷新 (' + allData.length + ' 条)';
 
-                // 3秒后恢复按钮文字
                 setTimeout(function() {
                     btn.querySelector('span:last-child').textContent = originalText;
                 }, 3000);
 
             } catch (e) {
                 console.error('刷新失败:', e);
-                btn.querySelector('span:last-child').textContent = '❌ 请先启动API服务器';
-                
-                // 5秒后显示详细提示
+                btn.querySelector('span:last-child').textContent = '❌ 刷新失败，请稍后重试';
                 setTimeout(function() {
-                    alert('❌ 请先启动API服务器\n\n请在新终端运行:\ncd "News about VC"\npython3 scripts/api_server.py\n\n然后再点击刷新按钮');
                     btn.querySelector('span:last-child').textContent = originalText;
-                }, 1000);
+                }, 3000);
             } finally {
                 btn.classList.remove('refreshing');
             }
