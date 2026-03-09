@@ -20,12 +20,21 @@ class TestFilterByDate:
         result = self.mc.filter_by_date(items)
         assert len(result) == 1
 
-    def test_removes_old_items(self):
+    def test_no_limit_keeps_old_items(self):
+        """DATA_RETENTION_DAYS=None means no filtering by default."""
         old_time = (datetime.now() - timedelta(days=100)).isoformat()
         items = [
             NewsItem(title="Old", url="u1", source="S", publish_time=old_time),
         ]
         result = self.mc.filter_by_date(items)
+        assert len(result) == 1
+
+    def test_removes_old_items_with_days(self):
+        old_time = (datetime.now() - timedelta(days=100)).isoformat()
+        items = [
+            NewsItem(title="Old", url="u1", source="S", publish_time=old_time),
+        ]
+        result = self.mc.filter_by_date(items, days=30)
         assert len(result) == 0
 
     def test_custom_days(self):

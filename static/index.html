@@ -631,6 +631,29 @@
             line-height: 1.5;
         }
 
+        .cell-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .lang-btn {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 4px 12px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .lang-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         .loading-msg {
             text-align: center;
             padding: 72px 20px;
@@ -672,7 +695,7 @@
                 <span class="nav-logo"></span>
                 <span class="nav-title">VC Radar</span>
                 <span class="nav-version">static</span>
-                <div class="notification-bell" id="notificationBell" onclick="checkNewArticles()" title="检查新文章">
+                <div class="notification-bell" id="notificationBell" onclick="checkNewArticles()" title="检查新文章" data-i18n-title="checkNew">
                     <span class="bell-icon" style="color: var(--accent); filter: drop-shadow(0 1px 2px rgba(243, 128, 32, 0.3));">🔔</span>
                     <span class="notification-dot" id="notificationDot" style="display: none;"></span>
                 </div>
@@ -681,25 +704,26 @@
                 <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" title="点击实时抓取最新内容">
                     <span class="spinner"></span>
                     <span class="icon">📡</span>
-                    <span>实时刷新</span>
+                    <span data-i18n="refresh">实时刷新</span>
                 </button>
                 <select class="nav-select" id="source-filter" onchange="filterData()">
-                    <option value="all">全部来源</option>
+                    <option value="all" data-i18n="allSources">全部来源</option>
                     <option value="Paul Graham">Paul Graham</option>
                     <option value="Hacker News">Hacker News</option>
                     <option value="Sam Altman">Sam Altman</option>
                     <option value="Fred Wilson">Fred Wilson</option>
                     <option value="Benedict Evans">Benedict Evans</option>
                 </select>
-                <input class="nav-input" type="text" id="search" placeholder="搜索标题..." onkeyup="filterData()">
+                <input class="nav-input" type="text" id="search" placeholder="搜索标题..." data-i18n-placeholder="searchPlaceholder" onkeyup="filterData()">
                 <span class="last-update" id="lastUpdate"></span>
+                <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
             </div>
         </nav>
 
         <div class="stats-grid" id="statsGrid" style="display:none">
             <div class="stat-card">
                 <div class="stat-value" id="totalCount">0</div>
-                <div class="stat-label">总计</div>
+                <div class="stat-label" data-i18n="total">总计</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="pgCount">0</div>
@@ -724,22 +748,23 @@
         </div>
 
         <div class="info-bar" id="infoBar" style="display:none">
-            <span class="info-text">📡 点击"实时刷新"获取5大VC源最新内容</span>
+            <span class="info-text" data-i18n="infoText">📡 点击"实时刷新"获取5大VC源最新内容</span>
             <span class="db-info">
-                <span style="color: var(--text-muted); margin-right: 12px;">上次更新: <span id="lastUpdateTime">--</span></span>
-                已抓取 <strong id="dbCount">0</strong> 条
+                <span style="color: var(--text-muted); margin-right: 12px;" data-i18n="lastUpdate">上次更新: </span><span id="lastUpdateTime">--</span>
+                <span data-i18n="crawled"> 已抓取 </span><strong id="dbCount">0</strong><span data-i18n="items"> 条</span>
             </span>
         </div>
 
         <div class="table-card">
-            <div id="loading" class="loading-msg">加载中...</div>
+            <div id="loading" class="loading-msg" data-i18n="loading">加载中...</div>
             <div class="table-wrapper" id="tableWrap" style="display:none">
                 <table>
                     <thead>
                         <tr>
-                            <th>来源</th>
-                            <th>标题</th>
-                            <th style="width: 35%;">关键词</th>
+                            <th data-i18n="thSource">来源</th>
+                            <th data-i18n="thTitle">标题</th>
+                            <th data-i18n="thKeywords">关键词</th>
+                            <th style="width: 120px;" data-i18n="thDate">发布时间</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -747,8 +772,8 @@
             </div>
         </div>
 
-        <footer class="footer">
-            Product By Chen Zihui
+        <footer class="footer" data-i18n="footer">
+            Product By Zihui Chen
         </footer>
     </div>
 
@@ -756,11 +781,11 @@
     <div class="notification-modal" id="notificationModal">
         <div class="notification-content">
             <div class="notification-header">
-                <span class="notification-title">📬 新内容通知</span>
+                <span class="notification-title" data-i18n="notifTitle">📬 新内容通知</span>
                 <button class="notification-close" onclick="closeNotificationModal()">×</button>
             </div>
             <div id="notificationBody">
-                <div class="notification-empty">暂无新内容更新</div>
+                <div class="notification-empty" data-i18n="noNew">暂无新内容更新</div>
             </div>
         </div>
     </div>
@@ -770,7 +795,7 @@
         <div class="welcome-content">
             <div class="welcome-header">
                 <span class="welcome-icon">📡</span>
-                <span class="welcome-title">欢迎使用 VC Radar</span>
+                <span class="welcome-title" data-i18n="welcomeTitle">欢迎使用 VC Radar</span>
             </div>
             <div class="welcome-body">
                 <div class="welcome-section">
@@ -818,6 +843,252 @@
     <script>
         let allData = [];
         let currentDisplayData = [];
+        let currentLang = 'zh';
+
+        // ========== i18n ==========
+        const I18N = {
+            zh: {
+                thSource: '来源', thTitle: '标题', thKeywords: '关键词', thDate: '发布时间',
+                total: '总计', allSources: '全部来源', searchPlaceholder: '搜索标题...',
+                refresh: '实时刷新', infoText: '📡 点击"实时刷新"获取5大VC源最新内容',
+                lastUpdate: '上次更新: ', crawled: ' 已抓取 ', items: ' 条',
+                loading: '加载中...', loadFail: '加载失败，请刷新重试',
+                footer: 'Product By Zihui Chen',
+                notifTitle: '📬 新内容通知', noNew: '🔍 暂无新内容更新',
+                notifTip: '点击标题可查看文章', checkNew: '检查新文章',
+                refreshWait: '请稍等...', refreshDone: '✓ 已刷新',
+                refreshFail: '❌ 刷新失败，请稍后重试', noData: '暂无数据',
+                welcomeTitle: '欢迎使用 VC Radar',
+                welcomeDescTitle: '📡 这是什么？',
+                welcomeDescText: 'VC Radar 是一个聚合型资讯平台，为你实时追踪全球顶级 VC 和科技领袖的最新动态。',
+                welcomeSourcesTitle: '🔍 我们追踪的 5 大信源：',
+                welcomeSourcesDesc: ['Y Combinator 创始人，创业教父', 'OpenAI CEO，AI 领域先锋', '知名 VC 投资人，AVC 博客主', '科技行业分析师，趋势洞察者', '全球技术社区热点资讯'],
+                welcomeFeaturesTitle: '✨ 主要功能：',
+                welcomeFeatures: ['<strong>实时刷新</strong> - 一键抓取 5 个网站的最新内容', '<strong>新内容提醒</strong> - 自动检测上次访问后的更新，铃铛提示', '<strong>智能关键词</strong> - 自动提取文章核心主题', '<strong>按主题浏览</strong> - 相似内容自动归类排列', '<strong>极速体验</strong> - 并行爬取，10 秒内获取 160+ 条资讯'],
+                welcomeTipsTitle: '💡 使用提示：',
+                welcomeTips: ['点击右上角"📡 实时刷新"获取最新内容', '关注铃铛 🔔 图标，橙色圆点表示有新内容', '点击文章标题即可跳转到原文阅读'],
+                langBtn: 'EN',
+                lastUpdatePrefix: '最后更新: ',
+            },
+            en: {
+                thSource: 'Source', thTitle: 'Title', thKeywords: 'Keywords', thDate: 'Date',
+                total: 'Total', allSources: 'All Sources', searchPlaceholder: 'Search titles...',
+                refresh: 'Refresh', infoText: '📡 Click "Refresh" to fetch latest from 5 VC sources',
+                lastUpdate: 'Last update: ', crawled: ' Crawled ', items: ' articles',
+                loading: 'Loading...', loadFail: 'Failed to load. Please refresh.',
+                footer: 'Product By Zihui Chen',
+                notifTitle: '📬 New Content', noNew: '🔍 No new updates',
+                notifTip: 'Click title to read', checkNew: 'Check new articles',
+                refreshWait: 'Please wait...', refreshDone: '✓ Refreshed',
+                refreshFail: '❌ Refresh failed. Try again later.', noData: 'No data',
+                welcomeTitle: 'Welcome to VC Radar',
+                welcomeDescTitle: '📡 What is this?',
+                welcomeDescText: 'VC Radar is an aggregation platform that tracks the latest insights from top VCs and tech leaders in real-time.',
+                welcomeSourcesTitle: '🔍 5 Sources We Track:',
+                welcomeSourcesDesc: ['Y Combinator founder, startup guru', 'OpenAI CEO, AI pioneer', 'Renowned VC investor, AVC blogger', 'Tech industry analyst, trend spotter', 'Global tech community hot topics'],
+                welcomeFeaturesTitle: '✨ Key Features:',
+                welcomeFeatures: ['<strong>Live Refresh</strong> - One-click fetch from 5 websites', '<strong>New Content Alerts</strong> - Auto-detect updates since last visit', '<strong>Smart Keywords</strong> - Auto-extract article core topics', '<strong>Browse by Topic</strong> - Similar content grouped together', '<strong>Blazing Fast</strong> - Parallel crawling, 160+ articles in 10 seconds'],
+                welcomeTipsTitle: '💡 Tips:',
+                welcomeTips: ['Click "📡 Refresh" in the top-right for latest content', 'Watch the 🔔 bell icon — orange dot means new content', 'Click article titles to jump to the original'],
+                langBtn: '中文',
+                lastUpdatePrefix: 'Last update: ',
+            }
+        };
+
+        function applyI18n() {
+            var t = I18N[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) el.textContent = t[key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n-placeholder');
+                if (t[key] !== undefined) el.placeholder = t[key];
+            });
+            document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n-title');
+                if (t[key] !== undefined) el.title = t[key];
+            });
+            document.getElementById('langBtn').textContent = t.langBtn;
+            document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+            // Welcome modal dynamic content
+            var descTitle = document.getElementById('welcomeDescTitle');
+            if (descTitle) descTitle.textContent = t.welcomeDescTitle;
+            var descText = document.getElementById('welcomeDescText');
+            if (descText) descText.textContent = t.welcomeDescText;
+            var srcTitle = document.getElementById('welcomeSourcesTitle');
+            if (srcTitle) srcTitle.textContent = t.welcomeSourcesTitle;
+            var srcList = document.getElementById('welcomeSourcesList');
+            if (srcList) {
+                var names = ['Paul Graham', 'Sam Altman', 'Fred Wilson', 'Benedict Evans', 'Hacker News'];
+                srcList.innerHTML = names.map(function(n, i) {
+                    return '<li><strong>' + n + '</strong> - <span class="source-desc">' + t.welcomeSourcesDesc[i] + '</span></li>';
+                }).join('');
+            }
+            var featTitle = document.getElementById('welcomeFeaturesTitle');
+            if (featTitle) featTitle.textContent = t.welcomeFeaturesTitle;
+            var featList = document.getElementById('welcomeFeaturesList');
+            if (featList) {
+                var icons = ['📬', '🔔', '🔑', '📊', '⚡'];
+                featList.innerHTML = t.welcomeFeatures.map(function(f, i) {
+                    return '<li><span class="feature-icon">' + icons[i] + '</span> <span class="feature-text">' + f + '</span></li>';
+                }).join('');
+            }
+            var tipsTitle = document.getElementById('welcomeTipsTitle');
+            if (tipsTitle) tipsTitle.textContent = t.welcomeTipsTitle;
+            var tipsList = document.getElementById('welcomeTipsList');
+            if (tipsList) {
+                tipsList.innerHTML = t.welcomeTips.map(function(tip) { return '<li>' + tip + '</li>'; }).join('');
+            }
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            try { localStorage.setItem('vc_radar_lang', currentLang); } catch(e) {}
+            applyI18n();
+            filterData();
+        }
+
+        // Init lang from localStorage
+        try {
+            var savedLang = localStorage.getItem('vc_radar_lang');
+            if (savedLang === 'en') currentLang = 'en';
+        } catch(e) {}
+
+        // ========== Utilities ==========
+        function escapeHtml(str) {
+            if (!str) return '';
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        function sanitizeUrl(url) {
+            if (!url) return '#';
+            try {
+                var parsed = new URL(url, window.location.origin);
+                if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return url;
+            } catch(e) {}
+            return '#';
+        }
+
+        function getSourceDotColor(source) {
+            if (!source) return 'var(--accent)';
+            if (source.includes('Paul')) return 'var(--source-pg)';
+            if (source.includes('Hacker')) return 'var(--source-hn)';
+            if (source.includes('Sam') || source.includes('Altman')) return 'var(--source-sa)';
+            if (source.includes('Fred') || source.includes('Wilson')) return 'var(--source-fw)';
+            if (source.includes('Benedict') || source.includes('Evans')) return 'var(--source-be)';
+            return 'var(--accent)';
+        }
+
+        // ========== Keyword Extraction ==========
+        function extractKeywords(title) {
+            var keywordPatterns = [
+                ['OpenAI', 'ChatGPT', 'GPT', 'Claude', 'AI', 'AGI'],
+                ['LLM', 'Transformer', 'ML', 'NLP', 'RAG'],
+                ['Crypto', 'Bitcoin', 'Ethereum', 'Web3'],
+                ['Startup', 'VC', 'IPO', 'M&A'],
+                ['SaaS', 'Cloud'],
+                ['Tesla', 'SpaceX', 'Apple', 'Google', 'Microsoft', 'Meta', 'Amazon', 'Netflix'],
+                ['YC', 'Y Combinator', 'Sequoia', 'a16z'],
+                ['Product', 'Growth', 'PMF'],
+                ['API', 'SDK', 'GPU', 'NFT', 'DAO', 'DeFi'],
+                ['Data', 'Security', 'Privacy'],
+                ['Design', 'UX', 'UI'],
+                ['Marketing', 'Sales'],
+                ['Innovation', 'Tech'],
+            ];
+            var keywords = [];
+            var lower = title.toLowerCase();
+            for (var g = 0; g < keywordPatterns.length; g++) {
+                var group = keywordPatterns[g];
+                for (var k = 0; k < group.length; k++) {
+                    if (lower.includes(group[k].toLowerCase())) {
+                        if (keywords.indexOf(group[k]) === -1) {
+                            keywords.push(group[k]);
+                            break;
+                        }
+                    }
+                }
+                if (keywords.length >= 3) break;
+            }
+            return keywords;
+        }
+
+        // ========== Data ==========
+        async function loadData() {
+            try {
+                var response = await fetch('data.json?t=' + new Date().getTime());
+                allData = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('tableWrap').style.display = 'block';
+                document.getElementById('statsGrid').style.display = 'grid';
+                document.getElementById('dbCount').textContent = allData.length;
+                updateStats();
+                filterData();
+                updateLastUpdateTime();
+                checkNewArticles();
+            } catch (e) {
+                document.getElementById('loading').textContent = I18N[currentLang].loadFail;
+            }
+        }
+
+        function updateStats() {
+            var counts = { 'Paul Graham': 0, 'Hacker News': 0, 'Sam Altman': 0, 'Fred Wilson': 0, 'Benedict Evans': 0 };
+            allData.forEach(function(item) {
+                if (counts.hasOwnProperty(item.source)) counts[item.source]++;
+            });
+            document.getElementById('totalCount').textContent = allData.length;
+            document.getElementById('pgCount').textContent = counts['Paul Graham'];
+            document.getElementById('hnCount').textContent = counts['Hacker News'];
+            document.getElementById('saCount').textContent = counts['Sam Altman'];
+            document.getElementById('fwCount').textContent = counts['Fred Wilson'];
+            document.getElementById('beCount').textContent = counts['Benedict Evans'];
+        }
+
+        function filterData() {
+            var source = document.getElementById('source-filter').value;
+            var search = document.getElementById('search').value.toLowerCase();
+            var filtered = allData;
+            if (source !== 'all') {
+                filtered = filtered.filter(function(item) { return item.source === source; });
+            }
+            if (search) {
+                filtered = filtered.filter(function(item) {
+                    return item.title.toLowerCase().includes(search);
+                });
+            }
+            currentDisplayData = filtered;
+
+            var tbody = document.getElementById('table-body');
+            tbody.innerHTML = filtered.map(function(item) {
+                var dotColor = getSourceDotColor(item.source);
+                var timeStr = item.publish_time ? escapeHtml(item.publish_time.slice(0, 10)) : '';
+                var keywords = extractKeywords(item.title);
+                var kwHtml = keywords.length > 0
+                    ? keywords.map(function(kw) { return '<span class="keyword-tag">' + escapeHtml(kw) + '</span>'; }).join(' ')
+                    : '';
+                return '<tr>' +
+                    '<td class="cell-source"><span class="source-dot" style="background:' + dotColor + '"></span><span class="source-name">' + escapeHtml(item.source) + '</span></td>' +
+                    '<td><a href="' + sanitizeUrl(item.url) + '" target="_blank" rel="noopener noreferrer" class="title-link">' + escapeHtml(item.title) + '</a></td>' +
+                    '<td class="cell-keywords">' + kwHtml + '</td>' +
+                    '<td class="cell-date">' + timeStr + '</td>' +
+                    '</tr>';
+            }).join('');
+
+            document.getElementById('totalCount').textContent = filtered.length;
+        }
+
+        function updateLastUpdateTime() {
+            var el = document.getElementById('lastUpdate');
+            if (!el || allData.length === 0) return;
+            var t = I18N[currentLang];
+            var times = allData.map(function(item) { return item.crawl_time || ''; }).filter(Boolean).sort();
+            if (times.length > 0) {
+                el.textContent = t.lastUpdatePrefix + times[times.length - 1].slice(0, 16).replace('T', ' ');
+            }
+        }
 
         // 加载数据
         async function loadData() {
@@ -948,57 +1219,28 @@
         }
 
         async function refreshData() {
-            const btn = document.getElementById('refreshBtn');
-            const originalText = btn.querySelector('span:last-child').textContent;
+            var btn = document.getElementById('refreshBtn');
+            var t = I18N[currentLang];
+            var refreshSpan = btn.querySelector('[data-i18n="refresh"]');
             btn.classList.add('refreshing');
-            btn.querySelector('span:last-child').textContent = '请稍等...';
+            refreshSpan.textContent = t.refreshWait;
 
             try {
-                // 调用后端API重新爬取数据
-                const response = await fetch('http://localhost:8081/api/refresh', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('API请求失败');
-                }
+                var dataResponse = await fetch('data.json?t=' + new Date().getTime());
+                if (!dataResponse.ok) throw new Error('load failed');
+                allData = await dataResponse.json();
 
-                const result = await response.json();
-                
-                if (result.success) {
-                    // 重新加载数据
-                    const dataResponse = await fetch('data.json?t=' + new Date().getTime());
-                    allData = await dataResponse.json();
-                    
-                    // 更新显示
-                    updateStats();
-                    document.getElementById('dbCount').textContent = allData.length;
-                    filterData();
-                    updateLastUpdateTime();
+                updateStats();
+                document.getElementById('dbCount').textContent = allData.length;
+                filterData();
+                updateLastUpdateTime();
+                checkNewArticles();
 
-                    // 显示成功消息
-                    btn.querySelector('span:last-child').textContent = '✓ ' + result.message;
-                } else {
-                    throw new Error(result.message);
-                }
-
-                // 3秒后恢复按钮文字
-                setTimeout(function() {
-                    btn.querySelector('span:last-child').textContent = originalText;
-                }, 3000);
-
+                refreshSpan.textContent = t.refreshDone + ' (' + allData.length + ')';
+                setTimeout(function() { refreshSpan.textContent = t.refresh; }, 3000);
             } catch (e) {
-                console.error('刷新失败:', e);
-                btn.querySelector('span:last-child').textContent = '❌ 请先启动API服务器';
-                
-                // 5秒后显示详细提示
-                setTimeout(function() {
-                    alert('❌ 请先启动API服务器\n\n请在新终端运行:\ncd "News about VC"\npython3 scripts/api_server.py\n\n然后再点击刷新按钮');
-                    btn.querySelector('span:last-child').textContent = originalText;
-                }, 1000);
+                refreshSpan.textContent = t.refreshFail;
+                setTimeout(function() { refreshSpan.textContent = t.refresh; }, 3000);
             } finally {
                 btn.classList.remove('refreshing');
             }
@@ -1064,19 +1306,18 @@
 
         // 点击铃铛检查新文章
         function checkNewArticles() {
-            const modal = document.getElementById('notificationModal');
-            const body = document.getElementById('notificationBody');
+            var modal = document.getElementById('notificationModal');
+            var body = document.getElementById('notificationBody');
+            var t = I18N[currentLang];
 
             if (newArticles.length === 0) {
-                // 没有新文章
-                body.innerHTML = '<div class="notification-empty">🔍 暂无新内容更新</div>';
+                body.innerHTML = '<div class="notification-empty">' + t.noNew + '</div>';
             } else {
-                // 有新文章，显示可点击的列表
-                let html = '<ul class="notification-list">';
+                var html = '<ul class="notification-list">';
                 newArticles.forEach(function(item) {
-                    const dotColor = getSourceDotColor(item.source);
-                    const safeUrl = sanitizeUrl(item.url);
-                    html += '<li class="notification-item" style="cursor: pointer;" onclick="window.open(\'' + safeUrl + '\', \'_blank\')" title="检查新文章">' +
+                    var dotColor = getSourceDotColor(item.source);
+                    var safeUrl = sanitizeUrl(item.url);
+                    html += '<li class="notification-item" style="cursor: pointer;" onclick="window.open(\'' + safeUrl + '\', \'_blank\')">' +
                         '<span class="notification-dot-small" style="background:' + dotColor + '"></span>' +
                         '<div class="notification-text">' +
                         '<div class="notification-article-title" style="color: var(--accent); text-decoration: underline;">' + escapeHtml(item.title) + '</div>' +
@@ -1085,23 +1326,15 @@
                         '</li>';
                 });
                 html += '</ul>';
-                html += '<div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); text-align: center;">点击标题可查看文章</div>';
+                html += '<div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); text-align: center;">' + t.notifTip + '</div>';
                 body.innerHTML = html;
 
-                // 点击后隐藏红点
-                const dot = document.getElementById('notificationDot');
-                if (dot) {
-                    dot.style.display = 'none';
-                }
-                
-                // 保存当前列表作为新的"上次访问"状态
+                var dot = document.getElementById('notificationDot');
+                if (dot) dot.style.display = 'none';
                 saveCurrentArticles();
-                
-                // 清空新文章列表（已查看）
                 newArticles = [];
             }
 
-            // 显示弹窗
             modal.classList.add('active');
         }
 
@@ -1154,17 +1387,13 @@
             return true;  // 始终返回 true，每次进入都显示弹窗
         }
 
-        // 页面加载时处理欢迎弹窗
+        // 页面加载时处理
+        applyI18n();
         if (shouldShowWelcome()) {
-            // 首次访问，显示欢迎弹窗
             showWelcomeModal();
         } else {
-            // 已访问过，直接加载数据
             loadData();
         }
-        // ========== 欢迎弹窗功能结束 ==========
-
-        updateLastUpdateTime();
     </script>
 </body>
 </html>

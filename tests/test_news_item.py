@@ -69,10 +69,16 @@ class TestIsWithinDateRange:
                         publish_time=datetime.now().isoformat())
         assert item.is_within_date_range() is True
 
-    def test_old_item_is_not_within(self):
+    def test_old_item_no_limit_returns_true(self):
+        """days=None (default) means no date filtering — always True."""
         old_time = (datetime.now() - timedelta(days=100)).isoformat()
         item = NewsItem(title="T", url="u", source="S", publish_time=old_time)
-        assert item.is_within_date_range() is False
+        assert item.is_within_date_range() is True
+
+    def test_old_item_with_days_is_not_within(self):
+        old_time = (datetime.now() - timedelta(days=100)).isoformat()
+        item = NewsItem(title="T", url="u", source="S", publish_time=old_time)
+        assert item.is_within_date_range(days=30) is False
 
     def test_custom_days(self):
         time_5_days_ago = (datetime.now() - timedelta(days=5)).isoformat()
@@ -80,9 +86,15 @@ class TestIsWithinDateRange:
         assert item.is_within_date_range(days=10) is True
         assert item.is_within_date_range(days=3) is False
 
-    def test_invalid_date_returns_false(self):
+    def test_invalid_date_no_limit_returns_true(self):
+        """days=None (default) means no filtering — invalid date still True."""
         item = NewsItem(title="T", url="u", source="S", publish_time="bad")
-        assert item.is_within_date_range() is False
+        assert item.is_within_date_range() is True
+
+    def test_invalid_date_with_days_returns_true(self):
+        """With days set, unparseable date is kept (returns True)."""
+        item = NewsItem(title="T", url="u", source="S", publish_time="bad")
+        assert item.is_within_date_range(days=30) is True
 
 
 class TestToDict:
