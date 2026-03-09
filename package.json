@@ -1,0 +1,39 @@
+{
+  "name": "vc-radar-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "dev:vinext": "vite dev --port 3001",
+    "build:vinext": "vite build",
+    "db:migrate": "wrangler d1 execute vc-radar-db --local --file=migrations/0001_init.sql",
+    "db:seed:gen": "npx tsx scripts/seed.ts",
+    "db:seed": "wrangler d1 execute vc-radar-db --local --file=migrations/seed.sql",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "next": "16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.26.1",
+    "@cloudflare/workers-types": "^4.20260306.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-rsc": "^0.5.21",
+    "react-server-dom-webpack": "^19.2.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vinext": "^0.0.25",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18",
+    "wrangler": "^4.71.0"
+  },
+  "type": "module"
+}

@@ -1,67 +1,25 @@
-name: Crawl & Deploy
+name: Deploy to Cloudflare Workers
 
 on:
-  schedule:
-    - cron: '0 */6 * * *'
-  workflow_dispatch:
   push:
-    branches: [ main ]
-
-permissions:
-  contents: write
+    branches: [main]
 
 jobs:
-  crawl:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4 lxml python-dateutil feedparser
-
-      - name: Run crawler
-        run: |
-          python3 -c "
-          import sys, os, shutil
-          sys.path.insert(0, '.')
-          os.makedirs('vc_tracker', exist_ok=True)
-          os.makedirs('config', exist_ok=True)
-          open('config/__init__.py', 'a').close()
-          from vc_tracker.multi_crawler import MultiCrawler
-          mc = MultiCrawler()
-          mc.crawl_all(max_items_per_site=50)
-          mc.save_data()
-          os.makedirs('static', exist_ok=True)
-          if os.path.exists('data/multi_source_news.json'):
-              shutil.copy('data/multi_source_news.json', 'static/data.json')
-              print(f'Crawled {len(mc.data)} items')
-          else:
-              print('Warning: No data file generated')
-          "
-
-      - name: Commit data
-        run: |
-          git config user.email "action@github.com"
-          git config user.name "GitHub Action"
-          git add data/ static/ 2>/dev/null || true
-          git diff --staged --quiet || git commit -m "data: $(date +'%Y-%m-%d %H:%M')"
-          git push || echo "Nothing to push"
-
   deploy:
-    needs: crawl
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - uses: actions/setup-node@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy static/ --project-name vc-radar
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx vinext build
+
+      - run: npx wrangler deploy --config dist/server/wrangler.json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
